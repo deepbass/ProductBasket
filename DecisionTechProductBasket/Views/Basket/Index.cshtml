@@ -8,7 +8,7 @@
 <h2>Basket</h2>
 
 <p>Total Price of the Basket in pounds: <span>@Model.TotalPriceInPounds</span></p>
-@using (Html.BeginForm("Edit", "Basket", FormMethod.Post, new { id = 1 }))
+@using (Html.BeginForm("Edit", "Basket", FormMethod.Post))
 {
     <table class="table">
         <tr>

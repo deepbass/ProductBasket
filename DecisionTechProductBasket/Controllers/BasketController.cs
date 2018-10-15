@@ -1,4 +1,5 @@
-﻿using DecisionTechProductBasket.Services;
+﻿using DecisionTechProductBasket.Models;
+using DecisionTechProductBasket.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,16 @@ namespace DecisionTechProductBasket.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult Edit()
+        {
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Edit(Basket basket)
+        {
+            return View(basket);
         }
 
         // GET: Basket/Edit/5
