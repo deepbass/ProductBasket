@@ -1,0 +1,39 @@
+﻿@model DecisionTechProductBasket.Models.Basket
+
+@{
+    ViewBag.Title = "Basket";
+}
+@Html.HiddenFor(m => Model.Id)
+
+<h2>Basket</h2>
+
+<p>Total Price of the Basket in pounds: <span>@Model.TotalPriceInPounds</span></p>
+@using (Html.BeginForm("Edit", "Basket", FormMethod.Post, new { id = 1 }))
+{
+    <table class="table">
+        <tr>
+            <th>Product Name</th>
+            <th>Price (£)</th>
+            <th>Quantity</th>
+            <th>Edit</th>
+        </tr>
+
+        @for (var i = 0; i < Model.Products.Count; i++)
+        {
+            @Html.HiddenFor(m => Model.Products[i].Id)
+
+            <tr>
+                <td>
+                    @Model.Products[i].DisplayName
+                </td>
+                <td>
+                    @Model.Products[i].PriceInPounds
+                </td>
+                <td>
+                    @Html.TextBoxFor(basket => basket.Products[i].Quantity)
+                </td>
+            </tr>
+        }
+    </table>
+    <input type="submit" value="Submit" class="btn-primary" />
+}
