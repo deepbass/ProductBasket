@@ -7,6 +7,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DecisionTechProductBasket;
 using DecisionTechProductBasket.Services;
 using DecisionTechProductBasket.Models;
+using Moq;
+using DecisionTechProductBasket.Repositories;
+using DecisionTechProductBasket.Dtos;
 
 namespace DecisionTechProductBasket.Tests.Controllers
 {
@@ -19,13 +22,17 @@ namespace DecisionTechProductBasket.Tests.Controllers
         public void Initialize()
         {
             _offerService = new OfferService();
+            
         }
         [TestMethod]
         public void Given_NoProducts_WhenGetCurrentBasket_ReturnEmptyBasketWithZeroTotalPrice()
         {
-            BasketService service = new BasketService(_offerService, new List<Product>());
+            Mock<IProductListRepository> mockProductRepository = new Mock<IProductListRepository>();
+            mockProductRepository.Setup(m => m.GetProductListForId("1")).Returns(new ProductListDto { Id = "1", Products = new List<ProductDto>() });
+            IProductListRepository mocked = mockProductRepository.Object;
+            BasketService service = new BasketService(_offerService, mocked);
 
-            var result = service.GetCurrentBasket();
+            var result = service.GetCurrentBasket("1");
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0,result.TotalPriceInPounds);
@@ -35,56 +42,66 @@ namespace DecisionTechProductBasket.Tests.Controllers
         [TestMethod]
         public void Given_OneBread_WhenGetCurrentBasket_ReturnBasketWithOneBreadWithEightyPenceTotalPrice()
         {
-            BasketService service = new BasketService(_offerService, new List<Product>() {
-                new Product
+            Mock<IProductListRepository> mockProductRepository = new Mock<IProductListRepository>();
+            mockProductRepository.Setup(m => m.GetProductListForId("1")).Returns(new ProductListDto { Id = "1", Products = new List<ProductDto>
+            {
+                new ProductDto
                 {
                     PriceInPounds = 1.00m,
-                    Type = Product.ProductType.Bread,
                     DisplayName = "Bread",
                     Quantity = 1,
-                    Id = 1
+                    Id = Product.BreadId
                 }
+            }
             });
+            IProductListRepository mocked = mockProductRepository.Object;
+            BasketService service = new BasketService(_offerService, mocked);
 
-            var result = service.GetCurrentBasket();
+            var result = service.GetCurrentBasket("1");
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1.00m, result.TotalPriceInPounds);
             Assert.AreEqual(1, result.Products.Count);
-            Assert.AreEqual(Product.ProductType.Bread, result.Products[0].Type);
+            Assert.AreEqual(Product.BreadId, result.Products[0].Id);
         }
 
         [TestMethod]
         public void Given_OneBreadOneButterOneMilk_WhenGetCurrentBasket_ReturnBasketWithTwoPoundsNinetyFivePenceTotalPrice()
         {
-            BasketService service = new BasketService(_offerService, new List<Product>() {
-                new Product
+            Mock<IProductListRepository> mockProductRepository = new Mock<IProductListRepository>();
+            mockProductRepository.Setup(m => m.GetProductListForId("1")).Returns(new ProductListDto
+            {
+                Id = "1",
+                Products = new List<ProductDto>
+            {
+                 new ProductDto
                 {
                     PriceInPounds = 1.00m,
-                    Type = Product.ProductType.Bread,
                     DisplayName = "Bread",
                     Quantity = 1,
-                    Id = 1
+                    Id = "1"
                 },
-                new Product
+                new ProductDto
                 {
-                    Type = Product.ProductType.Butter,
                     PriceInPounds = 0.80m,
                     DisplayName = "Butter",
                     Quantity = 1,
-                    Id = 2
+                    Id = "2"
                 },
-                new Product
+                new ProductDto
                 {
-                    Type = Product.ProductType.Milk,
                     PriceInPounds = 1.15m,
                     DisplayName = "Milk",
                     Quantity = 1,
-                    Id = 3
+                    Id = "3"
                 }
+            }
             });
+            IProductListRepository mocked = mockProductRepository.Object;
+            BasketService service = new BasketService(_offerService, mocked);
+           
 
-            var result = service.GetCurrentBasket();
+            var result = service.GetCurrentBasket("1");
 
             Assert.IsNotNull(result);
             Assert.AreEqual(2.95m, result.TotalPriceInPounds);
@@ -93,26 +110,32 @@ namespace DecisionTechProductBasket.Tests.Controllers
         [TestMethod]
         public void Given_TwoBreadTwoButter_WhenGetCurrentBasket_ReturnBasketWithThreePoundsTenPenceTotalPrice()
         {
-            BasketService service = new BasketService(_offerService, new List<Product>() {
-                new Product
+            Mock<IProductListRepository> mockProductRepository = new Mock<IProductListRepository>();
+            mockProductRepository.Setup(m => m.GetProductListForId("1")).Returns(new ProductListDto
+            {
+                Id = "1",
+                Products = new List<ProductDto>
+            {
+                 new ProductDto
                 {
                     PriceInPounds = 1.00m,
-                    Type = Product.ProductType.Bread,
                     DisplayName = "Bread",
                     Quantity = 2,
-                    Id = 1
+                    Id = Product.BreadId
                 },
-                new Product
+                new ProductDto
                 {
-                    Type = Product.ProductType.Butter,
                     PriceInPounds = 0.80m,
                     DisplayName = "Butter",
                     Quantity = 2,
-                    Id = 2
+                    Id = Product.ButterId
                 },
+            }
             });
+            IProductListRepository mocked = mockProductRepository.Object;
+            BasketService service = new BasketService(_offerService, mocked); 
 
-            var result = service.GetCurrentBasket();
+            var result = service.GetCurrentBasket("1");
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3.10m, result.TotalPriceInPounds);
@@ -121,18 +144,25 @@ namespace DecisionTechProductBasket.Tests.Controllers
         [TestMethod]
         public void Given_FourMilk_WhenGetCurrentBasket_ReturnBasketWithThreePoundsFortyFivePenceTotalPrice()
         {
-            BasketService service = new BasketService(_offerService, new List<Product>() {
-                new Product
+            Mock<IProductListRepository> mockProductRepository = new Mock<IProductListRepository>();
+            mockProductRepository.Setup(m => m.GetProductListForId("1")).Returns(new ProductListDto
+            {
+                Id = "1",
+                Products = new List<ProductDto>
+            {
+                new ProductDto
                 {
-                    Type = Product.ProductType.Milk,
                     PriceInPounds = 1.15m,
                     DisplayName = "Milk",
                     Quantity = 4,
-                    Id = 1
+                    Id = Product.MilkId
                 }
+            }
             });
+            IProductListRepository mocked = mockProductRepository.Object;
+            BasketService service = new BasketService(_offerService, mocked); 
 
-            var result = service.GetCurrentBasket();
+            var result = service.GetCurrentBasket("1");
 
             Assert.IsNotNull(result);
             Assert.AreEqual(3.45m, result.TotalPriceInPounds);
@@ -141,34 +171,39 @@ namespace DecisionTechProductBasket.Tests.Controllers
         [TestMethod]
         public void Given_OneBreadTwoButterEightMilk_WhenGetCurrentBasket_ReturnBasketWithninePoundsTotalPrice()
         {
-            BasketService service = new BasketService(_offerService, new List<Product>() {
-                new Product
+            Mock<IProductListRepository> mockProductRepository = new Mock<IProductListRepository>();
+            mockProductRepository.Setup(m => m.GetProductListForId("1")).Returns(new ProductListDto
+            {
+                Id = "1",
+                Products = new List<ProductDto>
+            {
+                new ProductDto
                 {
                     PriceInPounds = 1.00m,
-                    Type = Product.ProductType.Bread,
                     DisplayName = "Bread",
                     Quantity = 1,
-                    Id = 1
+                    Id = Product.BreadId
                 },
-                new Product
+                new ProductDto
                 {
-                    Type = Product.ProductType.Butter,
                     PriceInPounds = 0.80m,
                     DisplayName = "Butter",
                     Quantity = 2,
-                    Id = 2
+                    Id = Product.ButterId
                 },
-                new Product
+                new ProductDto
                 {
-                    Type = Product.ProductType.Milk,
                     PriceInPounds = 1.15m,
                     DisplayName = "Milk",
                     Quantity = 8,
-                    Id = 3
+                    Id = Product.MilkId
                 }
+            }
             });
-
-            var result = service.GetCurrentBasket();
+            IProductListRepository mocked = mockProductRepository.Object;
+            BasketService service = new BasketService(_offerService, mocked);
+            
+            var result = service.GetCurrentBasket("1");
 
             Assert.IsNotNull(result);
             Assert.AreEqual(9.00m, result.TotalPriceInPounds);

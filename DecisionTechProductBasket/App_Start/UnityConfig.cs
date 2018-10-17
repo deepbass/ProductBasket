@@ -1,9 +1,12 @@
 using DecisionTechProductBasket.Models;
+using DecisionTechProductBasket.Repositories;
 using DecisionTechProductBasket.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 using Unity.RegistrationByConvention;
 
 namespace DecisionTechProductBasket
@@ -47,33 +50,9 @@ namespace DecisionTechProductBasket
             // TODO: Register your type's mappings here.
             // container.RegisterType<IProductRepository, ProductRepository>();
             var offerRepository = new OfferService();
-            container.RegisterInstance<IOfferService>(offerRepository);
-            container.RegisterInstance<IBasketService>(new BasketService(offerRepository,new List<Product>() {
-                new Product
-                {
-                    Type = Product.ProductType.Bread,
-                    PriceInPounds = 1.00m,
-                    DisplayName = "Bread",
-                    Quantity = 0,
-                    Id = 1
-                },
-                new Product
-                {
-                    Type = Product.ProductType.Butter,
-                    PriceInPounds = 0.80m,
-                    DisplayName = "Butter",
-                    Quantity = 0,
-                    Id = 2
-                },
-                new Product
-                {
-                    Type = Product.ProductType.Milk,
-                    PriceInPounds = 1.15m,
-                    DisplayName = "Milk",
-                    Quantity = 0,
-                    Id = 3
-                }
-            }));
+            container.RegisterType<IOfferService,OfferService>();
+            container.RegisterType<IProductListRepository, ProductListRepository>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IBasketService,BasketService>();
         }
     }
 }

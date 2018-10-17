@@ -19,7 +19,7 @@ namespace DecisionTechProductBasket.Controllers
         // GET: Basket
         public ActionResult Index()
         {
-            return View(this._basketService.GetCurrentBasket());
+            return View(this._basketService.GetCurrentBasket("1")); // Hardcoded for convenience, would tie in to Azure Active Directory for multiple baskets
         }
 
         // GET: Basket/Details/5
@@ -68,17 +68,19 @@ namespace DecisionTechProductBasket.Controllers
 
         // POST: Basket/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(int id, Basket basket)
         {
             try
             {
                 // TODO: Add update logic here
-
+                _basketService.UpdateBasket(basket);
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                Console.WriteLine(e.Message);
+                // Handle by showing message to user
+                return RedirectToAction("Index");
             }
         }
 

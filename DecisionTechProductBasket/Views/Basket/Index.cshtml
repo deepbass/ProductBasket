@@ -3,13 +3,16 @@
 @{
     ViewBag.Title = "Basket";
 }
-@Html.HiddenFor(m => Model.Id)
 
 <h2>Basket</h2>
 
-<p>Total Price of the Basket in pounds: <span>@Model.TotalPriceInPounds</span></p>
 @using (Html.BeginForm("Edit", "Basket", FormMethod.Post))
+
+
 {
+    @Html.HiddenFor(m => Model.Id)
+    <p>Total Price of the Basket in pounds: <span>@Model.TotalPriceInPounds</span></p>
+
     <table class="table">
         <tr>
             <th>Product Name</th>
@@ -20,14 +23,16 @@
 
         @for (var i = 0; i < Model.Products.Count; i++)
         {
-            @Html.HiddenFor(m => Model.Products[i].Id)
+            @Html.HiddenFor(m => m.Products[i].Id)
 
             <tr>
                 <td>
-                    @Model.Products[i].DisplayName
+                    @Html.DisplayFor(m => m.Products[i].DisplayName)
+                    @Html.HiddenFor(m => m.Products[i].DisplayName)
                 </td>
                 <td>
-                    @Model.Products[i].PriceInPounds
+                    @Html.DisplayFor(m => m.Products[i].PriceInPounds)
+                    @Html.HiddenFor(m => m.Products[i].PriceInPounds)
                 </td>
                 <td>
                     @Html.TextBoxFor(basket => basket.Products[i].Quantity)
